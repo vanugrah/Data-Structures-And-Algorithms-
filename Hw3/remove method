@@ -1,0 +1,119 @@
+    @Override
+    public T remove(T data) {
+        if (data == null) {
+            throw new IllegalArgumentException("Data cannot be null!");
+        } else if (size == 0) {
+            throw new NoSuchElementException("Data was not found in the BST");
+        } else {
+            // FINDING PARENT WHEN SIZE = 1
+            BSTNode<T> parent = getParent(root, root,data);
+            BSTNode<T> current;
+            int direction; // encoding 0 for left, 1 for right.
+
+            if (parent == null) { // the node doesn't exist
+                throw new NoSuchElementException("Data was not found in the BST");
+            } else if (parent.getData().compareTo(data) > 0) { // current is to the left of parent
+                current = parent.getLeft();
+                direction = 0;
+            } else { // current is to the right of parent.
+                current = parent.getRight();
+                direction = 1;
+            }
+
+            // think about the edge case of removing the head.
+            // also what about removing from an empty tree?
+            // removing from a 1 element tree?
+
+            if (current.getData().compareTo(data) == 0) { // data was found
+
+                if (current.getLeft() == null && current.getRight() == null) { // removing if no children
+                    T value = current.getData();
+                    current = null;
+                    size--;
+                    return value;
+                } else if (current.getLeft() == null || current.getRight() == null) { // removing if 1 child
+                    T value = current.getData();
+                    if (direction == 0) { // current was left of parent
+                        if (current.getLeft() != null) { // currents child was to the left
+                            parent.setLeft(current.getLeft());
+                        } else { // currents child was to the right
+                            parent.setLeft(current.getRight());
+                        }
+                    } else { // current was to the right of parent
+                        if (current.getLeft() != null) { // currents child was to the left
+                            parent.setRight(current.getLeft());
+                        } else { // currents child was to the right
+                            parent.setRight(current.getRight());
+                        }
+                    }
+                    size--;
+                    return value;
+                } else { // removing if 2 children
+                    BSTNode<T> replacement = current.getRight();
+
+                    while (replacement.getLeft() != null) {
+                        replacement = replacement.getLeft();
+                    }
+
+                    T repData = replacement.getData();
+                    replacement = null;
+                    current.setData(repData);
+                    size--;
+                    return repData;
+                }
+            } else { // data was not found
+                throw new IllegalArgumentException("Data was not found in the BST!");
+            }
+        }
+    }
+
+    private BSTNode<T> getParent(BSTNode<T> current, BSTNode<T> previous, T data) {
+
+        // Finding parent when size = 1
+
+        // how do you know if you have reached the right parent?
+        // if data is lesser than parent data, then node should be on your left
+        // if data is greater than parent node then
+        // have a previous pointer.
+
+        // return null if you didnt find the thing you want to remove?
+        // if current and previous are same, then increment current but not previous
+
+        // if either children are null
+
+        if (current.getData().compareTo(data) > 0) { // current > data
+            previous = current;
+            current = current.getLeft();
+            return getParent(current, previous, data);
+        } else if (current.getData().compareTo(data) < 0) { // current < data
+            previous = current;
+            current = current.getRight();
+            return getParent(current, previous,data);
+        } else if (current.getData().compareTo(data) == 0) { // current == data
+            return previous;
+        } else {
+            return null;
+        }
+    }
+
+
+     @Override
+    public T get(T data) {
+        if (data == null) {
+            throw new IllegalArgumentException("Data cannot be null!");
+        } else if (size == 0) {
+            throw new NoSuchElementException("Data was not found in the BST");
+        } else {
+            BSTNode<T> parent = getParent(root, root, data);
+            BSTNode<T> current;
+
+            if (parent == null) {
+                throw new NoSuchElementException("Data was not found in the BST");
+            } else if (parent.getLeft() != null && parent.getLeft().getData().compareTo(data) == 0) {
+                current = parent.getLeft();
+            } else {
+                current = parent.getRight();
+            }
+            return current.getData();
+        }
+    }
